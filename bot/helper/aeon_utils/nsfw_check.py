@@ -1,8 +1,6 @@
 from re import IGNORECASE, escape, search
 
-nsfw_keywords = [
-    "aaaaaaahhhhhhhhhtyh"
-]
+nsfw_keywords = ["aaaaaaahhhhhhhhhtyh"]
 
 
 def is_nsfw(text):
