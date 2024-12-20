@@ -8,10 +8,10 @@ from bot import LOGGER
 
 async def change_metadata(file, dirpath, key):
     LOGGER.info(f"Starting metadata modification for file: {file}")
-    
+
     # Path to overlay image
     overlay_image_path = "overlay.png"  # Ensure this path is correct
-    
+
     temp_overlay_file = f"{file}.overlay.mkv"
     overlay_output_path = os.path.join(dirpath, temp_overlay_file)
     full_file_path = os.path.join(dirpath, file)
@@ -32,8 +32,10 @@ async def change_metadata(file, dirpath, key):
         "copy",
         overlay_output_path,
     ]
-    
-    overlay_process = await create_subprocess_exec(*overlay_cmd, stderr=PIPE, stdout=PIPE)
+
+    overlay_process = await create_subprocess_exec(
+        *overlay_cmd, stderr=PIPE, stdout=PIPE
+    )
     stdout, stderr = await overlay_process.communicate()
 
     if overlay_process.returncode != 0:
