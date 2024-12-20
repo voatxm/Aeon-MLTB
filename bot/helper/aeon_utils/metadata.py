@@ -8,8 +8,46 @@ from bot import LOGGER
 
 async def change_metadata(file, dirpath, key):
     LOGGER.info(f"Starting metadata modification for file: {file}")
-    temp_file = f"{file}.temp.mkv"
+    
+    # Path to overlay image
+    overlay_image_path = "overlay.png"  # Ensure this path is correct
+    
+    temp_overlay_file = f"{file}.overlay.mkv"
+    overlay_output_path = os.path.join(dirpath, temp_overlay_file)
     full_file_path = os.path.join(dirpath, file)
+
+    # Add the overlay to the video
+    overlay_cmd = [
+        "ffmpeg",
+        "-y",
+        "-i",
+        full_file_path,
+        "-i",
+        overlay_image_path,
+        "-filter_complex",
+        "overlay=10:10",  # Adjust the position as needed (x=10, y=10 here)
+        "-c:v",
+        "libx264",
+        "-c:a",
+        "copy",
+        overlay_output_path,
+    ]
+    
+    overlay_process = await create_subprocess_exec(*overlay_cmd, stderr=PIPE, stdout=PIPE)
+    stdout, stderr = await overlay_process.communicate()
+
+    if overlay_process.returncode != 0:
+        err = stderr.decode().strip()
+        LOGGER.error(err)
+        LOGGER.error(f"Error adding overlay to file: {file}")
+        return file
+
+    # Replace original file with the overlayed video
+    os.replace(overlay_output_path, full_file_path)
+    LOGGER.info(f"Overlay added successfully for file: {file}")
+
+    # Continue with the metadata modification as before
+    temp_file = f"{file}.temp.mkv"
     temp_file_path = os.path.join(dirpath, temp_file)
 
     cmd = [
