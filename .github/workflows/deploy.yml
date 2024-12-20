@@ -33,11 +33,14 @@ on:
 
 jobs:
   deploy:
-    # Test explicitly on Ubuntu 24.04
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout deploy branch
         uses: actions/checkout@v2
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
 
       - name: Delete unnecessary directories and files
         run: |
@@ -54,7 +57,7 @@ jobs:
           # Delete a2c.conf if it exists
           if [ -f "./a2c.conf" ]; then
             echo "Deleting file: a2c.conf"
-            rm -f ./a2c.conf
+            rm -f ./a2c.conf"
           else
             echo "File not found: a2c.conf"
           fi
